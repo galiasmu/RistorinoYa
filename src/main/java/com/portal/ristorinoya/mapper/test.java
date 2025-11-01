@@ -1,4 +1,4 @@
 package com.portal.ristorinoya.mapper;
 
-public class prueba {
+public class test {
 }
