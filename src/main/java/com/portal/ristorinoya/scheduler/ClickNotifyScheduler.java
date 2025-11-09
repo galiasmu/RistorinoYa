@@ -22,7 +22,7 @@ public class ClickNotifyScheduler {
 
     private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    @Scheduled(fixedDelayString = "${ristorino.notification.retries.fixed-delay-ms:60000}")
+    //@Scheduled(fixedDelayString = "${ristorino.notification.retries.fixed-delay-ms:60000}")
     public void processPending() {
         var pendings = repo.findTop100ByStatusOrderByClickedAtAsc(ClickEvent.Status.PENDING);
         for (var ev : pendings) {

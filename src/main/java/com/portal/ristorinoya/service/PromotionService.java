@@ -1,9 +1,11 @@
 package com.portal.ristorinoya.service;
 
 import com.portal.ristorinoya.dto.PromotionDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface PromotionService {
-    Page<PromotionDTO> getActive(Pageable pageable);
+
+    List<PromotionDTO> getContenidos(LocalDate desde, LocalDate hasta);
 }
