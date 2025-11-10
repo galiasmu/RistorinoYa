@@ -30,4 +30,8 @@ public class PromotionServiceImpl implements PromotionService {
 
         return promotionRespository.getContenidosVigentes(desde, hasta);
     }
+
+    public PromotionDTO getPromotionById( int nroRestaurante, int nroIdioma, int nroContenido){
+        return promotionRespository.getPromotionById(nroRestaurante, nroIdioma, nroContenido);
+    }
 }
