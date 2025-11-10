@@ -48,4 +48,38 @@ public class PromotionRespository {
                 )
         ).collect(Collectors.toList());
     }
+
+    public PromotionDTO getPromotionById(int nroRestaurante, int nroIdioma, int nroContenido) {
+        Query query = em.createNativeQuery(
+                "EXEC sp_get_contenido_by_id :nroRestaurante, :nroIdioma, :nroContenido"
+        );
+        query.setParameter("nroRestaurante", nroRestaurante);
+        query.setParameter("nroIdioma", nroIdioma);
+        query.setParameter("nroContenido", nroContenido);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = query.getResultList();
+
+        if (rows.isEmpty()) {
+            return null;
+        }
+
+        Object[] row = rows.get(0);
+        return new PromotionDTO(
+                (Integer) row[0],
+                (Integer) row[1],
+                (Integer) row[2],
+                (Integer) row[3],
+                (String) row[4],
+                (String) row[5],
+                (String) row[6],
+                ((Date) row[7]).toLocalDate(),
+                ((Date) row[8]).toLocalDate(),
+                (row[9] != null ? ((Number) row[9]).doubleValue() : null),
+                (String) row[10],
+                (String) row[11],
+                (String) row[12],
+                (String) row[13]
+        );
+    }
 }

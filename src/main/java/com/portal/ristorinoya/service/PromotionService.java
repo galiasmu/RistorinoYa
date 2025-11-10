@@ -8,4 +8,5 @@ import java.util.List;
 public interface PromotionService {
 
     List<PromotionDTO> getContenidos(LocalDate desde, LocalDate hasta);
+    PromotionDTO getPromotionById(int nroRestaurante, int nroIdioma, int nroContenido);
 }
