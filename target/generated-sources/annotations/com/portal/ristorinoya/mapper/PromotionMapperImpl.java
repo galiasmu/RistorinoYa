@@ -2,14 +2,14 @@ package com.portal.ristorinoya.mapper;
 
 import com.portal.ristorinoya.dto.PromotionDTO;
 import com.portal.ristorinoya.entity.Promotion;
-import com.portal.ristorinoya.entity.Restaurant;
+import java.time.LocalDate;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-09T16:08:48-0300",
-    comments = "version: 1.6.2, compiler: javac, environment: Java 25 (Oracle Corporation)"
+    date = "2025-11-10T18:33:05-0300",
+    comments = "version: 1.6.2, compiler: javac, environment: Java 25.0.1 (Oracle Corporation)"
 )
 @Component
 public class PromotionMapperImpl implements PromotionMapper {
@@ -20,26 +20,23 @@ public class PromotionMapperImpl implements PromotionMapper {
             return null;
         }
 
-        PromotionDTO.PromotionDTOBuilder promotionDTO = PromotionDTO.builder();
+        Integer nroRestaurante = null;
+        Integer nroIdioma = null;
+        Integer nroContenido = null;
+        Integer nroSucursal = null;
+        String contenidoPromocional = null;
+        String imagenPromocional = null;
+        String contenidoAPublicar = null;
+        LocalDate fechaIniVigencia = null;
+        LocalDate fechaFinVigencia = null;
+        Double costoClick = null;
+        String codContenidoRestaurante = null;
+        String razonSocial = null;
+        String nomIdioma = null;
+        String nomSucursal = null;
 
-        promotionDTO.restaurantId( entityRestaurantId( entity ) );
-        promotionDTO.active( entity.isActive() );
-        promotionDTO.id( entity.getId() );
-        promotionDTO.title( entity.getTitle() );
-        promotionDTO.description( entity.getDescription() );
-        promotionDTO.imageUrl( entity.getImageUrl() );
-        promotionDTO.startAt( entity.getStartAt() );
-        promotionDTO.endAt( entity.getEndAt() );
-        promotionDTO.priority( entity.getPriority() );
+        PromotionDTO promotionDTO = new PromotionDTO( nroRestaurante, nroIdioma, nroContenido, nroSucursal, contenidoPromocional, imagenPromocional, contenidoAPublicar, fechaIniVigencia, fechaFinVigencia, costoClick, codContenidoRestaurante, razonSocial, nomIdioma, nomSucursal );
 
-        return promotionDTO.build();
-    }
-
-    private Long entityRestaurantId(Promotion promotion) {
-        Restaurant restaurant = promotion.getRestaurant();
-        if ( restaurant == null ) {
-            return null;
-        }
-        return restaurant.getId();
+        return promotionDTO;
     }
 }
