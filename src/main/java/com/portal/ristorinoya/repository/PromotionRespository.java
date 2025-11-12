@@ -1,85 +1,54 @@
 package com.portal.ristorinoya.repository;
 
-import com.portal.ristorinoya.dto.PromotionDTO;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import com.portal.ristorinoya.beans.PromotionBean;
+import com.portal.ristorinoya.components.SimpleJdbcCallFactory;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class PromotionRespository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final SimpleJdbcCallFactory jdbcCallFactory;
 
-    public List<PromotionDTO> getContenidosVigentes(LocalDate desde, LocalDate hasta) {
-
-        Query query = em.createNativeQuery(
-                "EXEC sp_get_contenidos_vigentes :desde, :hasta"
-        );
-
-        query.setParameter("desde", Date.valueOf(desde));
-        query.setParameter("hasta", Date.valueOf(hasta));
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> rows = query.getResultList();
-
-        return rows.stream().map(row ->
-                new PromotionDTO(
-                        (Integer) row[0],
-                        (Integer) row[1],
-                        (Integer) row[2],
-                        (Integer) row[3],
-                        (String) row[4],
-                        (String) row[5],
-                        (String) row[6],
-                        ((Date) row[7]).toLocalDate(),
-                        ((Date) row[8]).toLocalDate(),
-                        (row[9] != null ? ((Number) row[9]).doubleValue() : null),
-                        (String) row[10],
-                        (String) row[11],
-                        (String) row[12],
-                        (String) row[13]
-                )
-        ).collect(Collectors.toList());
+    public PromotionRespository(SimpleJdbcCallFactory jdbcCallFactory) {
+        this.jdbcCallFactory = jdbcCallFactory;
     }
 
-    public PromotionDTO getPromotionById(int nroRestaurante, int nroIdioma, int nroContenido) {
-        Query query = em.createNativeQuery(
-                "EXEC sp_get_contenido_by_id :nroRestaurante, :nroIdioma, :nroContenido"
+    public List<PromotionBean> getContenidosVigentes(LocalDate desde, LocalDate hasta) {
+        LocalDate fromDate = desde != null ? desde : LocalDate.now();
+        LocalDate toDate = hasta != null ? hasta : LocalDate.now();
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("FechaDesde", fromDate)
+                .addValue("FechaHasta", toDate);
+
+        return jdbcCallFactory.executeQuery(
+                "sp_get_contenidos_vigentes",
+                "dbo",
+                params,
+                "promotions",
+                PromotionBean.class
         );
-        query.setParameter("nroRestaurante", nroRestaurante);
-        query.setParameter("nroIdioma", nroIdioma);
-        query.setParameter("nroContenido", nroContenido);
+    }
 
-        @SuppressWarnings("unchecked")
-        List<Object[]> rows = query.getResultList();
+    public PromotionBean getPromotionById(int nroRestaurante, int nroIdioma, int nroContenido) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("nroRestaurante", nroRestaurante)
+                .addValue("nroIdioma", nroIdioma)
+                .addValue("nroContenido", nroContenido);
 
-        if (rows.isEmpty()) {
-            return null;
-        }
-
-        Object[] row = rows.get(0);
-        return new PromotionDTO(
-                (Integer) row[0],
-                (Integer) row[1],
-                (Integer) row[2],
-                (Integer) row[3],
-                (String) row[4],
-                (String) row[5],
-                (String) row[6],
-                ((Date) row[7]).toLocalDate(),
-                ((Date) row[8]).toLocalDate(),
-                (row[9] != null ? ((Number) row[9]).doubleValue() : null),
-                (String) row[10],
-                (String) row[11],
-                (String) row[12],
-                (String) row[13]
+        List<PromotionBean> results = jdbcCallFactory.executeQuery(
+                "sp_get_contenido_by_id",
+                "dbo",
+                params,
+                "promotion",
+                PromotionBean.class
         );
+
+        return results.isEmpty() ? null : results.get(0);
     }
 }
