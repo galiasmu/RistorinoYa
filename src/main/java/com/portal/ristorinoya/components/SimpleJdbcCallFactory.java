@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -38,10 +39,10 @@ public class SimpleJdbcCallFactory {
         return jdbcCall.execute(params);
     }
 
-    public Map<String, Object> executeStoredProcedure(String procedureName, String schemaName, SqlParameterSource params, SqlOutParameter... outParameters) {
+    public Map<String, Object> executeStoredProcedure(String procedureName, String schemaName, SqlParameterSource params, SqlParameter... allParameters) {
         SimpleJdbcCall jdbcCall = createCall(procedureName, schemaName)
                 .withoutProcedureColumnMetaDataAccess()
-                .declareParameters(outParameters);
+                .declareParameters(allParameters);
         return jdbcCall.execute(params);
     }
 

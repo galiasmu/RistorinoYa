@@ -1,7 +1,6 @@
 package com.portal.ristorinoya.repository;
 
 import com.portal.ristorinoya.components.SimpleJdbcCallFactory;
-import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -28,13 +27,18 @@ public class ClickRepository {
                 .addValue("nro_restaurante", nroRestaurante)
                 .addValue("nro_idioma", nroIdioma)
                 .addValue("nro_contenido", nroContenido)
-                .addValue("nro_cliente", nroCliente);
+                .addValue("nro_cliente", nroCliente)
+                .addValue("costo_click", null);
 
         Map<String, Object> result = jdbcCallFactory.executeStoredProcedure(
-                "sp_registrar_click_contenido",
+                "sp_insert_click_contenido",
                 "dbo",
                 params,
-                new SqlOutParameter("nro_click", Types.INTEGER)
+                new SqlParameter("nro_restaurante", Types.INTEGER),
+                new SqlParameter("nro_idioma", Types.INTEGER),
+                new SqlParameter("nro_contenido", Types.INTEGER),
+                new SqlParameter("nro_cliente", Types.INTEGER),
+                new SqlParameter("costo_click", Types.DECIMAL)
         );
 
         return (Integer) result.get("nro_click");

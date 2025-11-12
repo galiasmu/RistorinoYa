@@ -18,7 +18,7 @@ public class ClickService {
             @RequestParam Integer nroRestaurante,
             @RequestParam Integer nroIdioma,
             @RequestParam Integer nroContenido,
-            @RequestParam Integer nroCliente) {
+            @RequestParam(required = false) Integer nroCliente) {
         Integer nroClick = clickRepository.registrarClick(nroRestaurante, nroIdioma, nroContenido, nroCliente);
         return ResponseEntity.ok(nroClick);
     }
