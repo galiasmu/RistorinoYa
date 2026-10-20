@@ -1,267 +1,56 @@
-```markdown
-# Ristorino — Guía técnica del proyecto (Backend + Frontend)
+# Ristorino — Backend
 
-> **Objetivo:** Documentar cómo está armado el sistema Ristorino (Spring Boot + Angular + Mock Node), qué hace cada archivo/carpeta y cómo correr una demo end-to-end.
+Backend del portal Ristorino. Toma como guía la estructura de `indecWS`.
 
----
+| Documento | Qué tiene |
+|---|---|
+| **README.md** (este) | Cómo levantarlo y probarlo rápido |
+| **[GUIA.md](GUIA.md)** | Para qué sirve cada carpeta, clase, endpoint y stored procedure; cómo usar Postman y los batch; cómo hacer los cambios más comunes; problemas comunes |
+| **[ARQUITECTURA.md](ARQUITECTURA.md)** | Capas, patrones y decisiones de diseño (para explicar la arquitectura) |
+| `Doc/Ristorino.backend.postman_collection.json` | Colección de Postman: cada request explica qué hace y qué respuesta esperar |
 
-## 1) Visión general
+## Cómo levantarlo
 
-**Ristorino** es un portal que publica promociones enviadas por restaurantes externos.  
-Registra clics de usuarios sobre esas promociones y notifica asincrónicamente a los restaurantes.
+1. **Base de datos.** En SSMS o Azure Data Studio, ejecutá en este orden:
+   1. `Doc/scripts/final-db-creation.sql`: crea la base `ristorino` con sus tablas y datos iniciales.
+   2. `Doc/scripts/procedimientos.sql`: crea los stored procedures.
 
-**Componentes:**
-
-* 🟢 **Backend (Spring Boot)** — expone APIs públicas del portal, guarda promociones/restaurantes y registra clics. Además ejecuta un *scheduler* para notificar clics.
-* 🟠 **Restaurante Mock (Node/Express)** — simula un restaurante: envía promociones al portal y recibe notificaciones de clics.
-* 🔵 **Frontend (Angular)** — lista promociones, registra clics y muestra detalle del restaurante.
-
----
-
-## 2) Arquitectura funcional (flujo)
-
-```
-
-Restaurante Mock (Node, :9090)
-└─(POST /demo/publish-promo)→ Ristorino (Spring, :8081)
-├─ guarda Restaurant + Promotion
-Frontend (Angular, :4200) ──GET /api/promotions──▶
-Frontend (click) ──POST /api/clicks──▶ Ristorino
-Ristorino (scheduler) ──POST /demo/notify-click──▶ Restaurante Mock
-
-````
-
-**Paso a paso:**
-
-1. El Mock envía una promoción a `/api/external/promotions` (vía `POST /demo/publish-promo`).
-2. Backend crea/actualiza **Restaurant** y guarda **Promotion**.
-3. Front consulta `GET /api/promotions` y renderiza tarjetas.
-4. Usuario hace clic → front envía `POST /api/clicks {promotionId}`.
-5. Backend marca el click como `PENDING`.
-6. Un **scheduler** recoge pendientes y notifica a `POST /demo/notify-click` del restaurante.
-7. Mock responde **OK** y el backend marca el click como `SENT`.
-
----
-
-## 3) Backend (Spring Boot)
-
-**Puertos y propiedades (ejemplo):**
-
-```properties
-server.port=8081
-spring.application.name=RistorinoYa
-
-ristorino.notification.rest.base-url=http://localhost:9090
-ristorino.notification.rest.path=/demo/notify-click
-ristorino.notification.rest.enabled=true
-ristorino.notification.retries.max-attempts=5
-ristorino.notification.retries.fixed-delay-ms=3000
-
-spring.h2.console.enabled=true
-spring.jpa.hibernate.ddl-auto=update
-````
-
-**Paquetes/Clases (resumen):**
-
-```
-com.portal.ristorinoya
-├── controller
-│   ├── PromotionController         // GET /api/promotions
-│   ├── ClickController             // POST /api/clicks
-│   ├── RestaurantController        // GET /api/restaurants/{id}
-│   └── ExternalIngestController    // POST /api/external/promotions
-├── dto
-│   ├── PromotionDTO, RestaurantDTO, ClickCreateDTO, ExternalPromotionInDTO
-├── entity
-│   ├── Promotion, Restaurant, ClickEvent
-├── repository
-│   ├── PromotionRepository, RestaurantRepository, ClickEventRepository
-├── scheduler
-│   └── ClickNotifyScheduler        // notifica clics a restaurantes
-└── client.restaurantnotify
-    ├── RestaurantNotifyClient, RestRestaurantNotifyClient
-```
-
-**Contratos API (usados por el front):**
-
-* `GET /api/promotions` → `{ content: Promotion[] }`
-* `POST /api/clicks`    → `{ clickId: number }`
-* `GET /api/restaurants/{id}` → `Restaurant`
-
-**CORS (desarrollo):**
-
-```java
-@Bean
-public WebMvcConfigurer corsConfigurer() {
-  return new WebMvcConfigurer() {
-    @Override public void addCorsMappings(CorsRegistry registry) {
-      registry.addMapping("/**")
-        .allowedOrigins("http://localhost:4200")
-        .allowedMethods("GET","POST","PUT","DELETE","OPTIONS");
-    }
-  };
-}
-```
-
----
-
-## 4) Mock Restaurante (Node/Express)
-
-**package.json** (mínimo):
-
-```json
-{
-  "name": "ristorino-mock-restaurant",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.19.2" }
-}
-```
-
-**server.js** (endpoints):
-
-```js
-import express from 'express';
-const app = express();
-app.use(express.json());
-
-// recibe notificaciones de clics
-app.post('/demo/notify-click', (req, res) => {
-  console.log('[MOCK] Petición recibida:', req.body);
-  res.json({ ok: true });
-});
-
-// publica una promo hacia Ristorino
-app.post('/demo/publish-promo', async (req, res) => {
-  const target = 'http://localhost:8081/api/external/promotions';
-  const resp = await fetch(target, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(req.body)
-  });
-  const data = await resp.json();
-  res.status(resp.status).json({ ok: resp.ok, created: data });
-});
-
-app.listen(9090, () => console.log('[MOCK] Escuchando en http://localhost:9090'));
-```
-
----
-
-## 5) Frontend (Angular)
-
-**Stack:** Angular 20 (standalone app shell) + feature module `HomeModule`.
-
-**Estructura relevante:**
-
-```
-src/
-├── app/
-│   ├── app.html                       // <router-outlet />
-│   ├── app.config.ts                  // provideRouter + provideHttpClient
-│   ├── app.routes.ts                  // carga lazy de HomeModule
-│   └── home/
-│       ├── home.module.ts             // declara componentes + importa Common/HTTP/Router
-│       ├── home-routing.module.ts     // rutas feature ('', 'restaurantes/:id')
-│       ├── components/
-│       │   ├── home/...
-│       │   └── promotion-card/...
-│       ├── pages/
-│       │   └── restaurant-detail/...
-│       ├── models/
-│       │   ├── promotion.model.ts
-│       │   └── restaurant.model.ts
-│       └── services/
-│           ├── promotions.service.ts
-│           └── click.service.ts
-└── environments/
-    ├── environment.ts
-    └── environment.development.ts
-```
-
-**Endpoints que consume el front:**
-
-* `GET /api/promotions`
-* `POST /api/clicks`
-* `GET /api/restaurants/{id}`
-
----
-
-## 6) Cómo correr una demo end-to-end
-
-1. **Backend** (Spring Boot) en `:8081`
-
-   ```bash
-   mvn spring-boot:run
+   Si usás sqlcmd, agregá `-f 65001` para que no se rompan los acentos. Usuario y contraseña de SQL Server: `sa` / `Password.1234`. Si son otros, cambialos en `application.properties`.
+2. **Servicios de los restaurantes.** Levantá los 4 servicios de `servicios-restaurantes/` (puertos 8081 a 8084), cada uno con su base.
+3. **Backend.** Abrí el proyecto en IntelliJ y ejecutá `RistorinoApplication`. Queda en el puerto **8080**.
+   - Como en indecWS, el proyecto usa `spring-boot-starter-data-jdbc`, así que la base tiene que estar levantada antes de arrancar.
+4. **Cargar los datos de los restaurantes** (sucursales y contenidos), una vez por restaurante (`{nro}` = 1 a 4):
    ```
-2. **Mock** (Node) en `:9090`
-
-   ```bash
-   npm install
-   npm start
+   POST http://localhost:8080/api/admin/restaurantes/{nro}/actualizar-sucursales
+   POST http://localhost:8080/api/admin/restaurantes/{nro}/actualizar-contenidos
    ```
-3. **Publicar una promoción**
+   También se puede hacer con los ejecutores de `batch/`: `ActualizarSucursalesEjecutor` y `ActualizarContenidosEjecutor`.
 
-   ```bash
-   curl -X POST http://localhost:9090/demo/publish-promo \
-     -H "Content-Type: application/json" \
-     -d '{
-       "restaurantName": "Trattoria Roma",
-       "title": "2x1 en pastas (mock)",
-       "description": "Promo enviada por el mock al portal",
-       "imageUrl": "https://picsum.photos/seed/roma/800/450",
-       "startAt": "2025-10-30T00:00:00Z",
-       "endAt": "2025-11-10T00:00:00Z",
-       "active": true,
-       "priority": 7
-     }'
+## Flujo de prueba
+
+**Con Postman:** importá `Doc/Ristorino.backend.postman_collection.json` y corré las carpetas en orden (0 → 7), una por una o todas juntas con el *Collection Runner*.
+- La carpeta 0 sincroniza sucursales y contenidos de los 4 restaurantes.
+- El registro usa un correo distinto en cada corrida, y el login guarda el token solo; todos los requests siguientes lo mandan.
+- La fecha de reserva se calcula sola (hoy + 7 días). Cada request tiene un test con el código de respuesta esperado (incluidos los casos de error: 400, 401, 404, 409 y 501 para la IA).
+
+**A mano:**
+
+1. `POST /api/v1/auth/registro`
+   ```json
+   {"apellido":"Ferreyra","nombre":"Lucía","correo":"lucia@mail.com","clave":"1234","confirmacionClave":"1234",
+    "telefonos":"351-5550000","nroLocalidad":1,"preferencias":[{"codCategoria":1,"nroValorDominio":5}]}
    ```
-4. **Frontend (Angular)** en `:4200`
-
-   ```bash
-   npm install
-   ng serve -o
+2. `POST /api/v1/auth/login` con `{"correo":"lucia@mail.com","clave":"1234"}`. Devuelve un `token`.
+3. `GET /api/v1/contenidos`: promociones vigentes.
+4. `GET /api/v1/restaurantes/2/sucursales/1/disponibilidad?fecha=2026-10-20&adultos=2`: consulta en tiempo real a Perukai (SOAP).
+5. `POST /api/v1/reservas` con el header `Authorization: Bearer <token>`:
+   ```json
+   {"nroRestaurante":2,"nroSucursal":1,"codZona":1,"fecha":"2026-10-20","hora":"20:30","cantAdultos":2,"cantMenores":0}
    ```
-5. Verás las promociones en Home (`GET /api/promotions`).
-   Al hacer clic:
+6. `GET /api/v1/reservas` con el mismo token.
+7. `POST /api/v1/contenidos/clicks` con `{"nroRestaurante":1,"nroIdioma":1,"nroContenido":1}`, y después `POST /api/admin/restaurantes/1/notificar-clicks`.
 
-    * Registra `POST /api/clicks`
-    * Abre detalle `GET /api/restaurants/:id`
-6. La consola del mock mostrará notificaciones del scheduler:
+## Pendiente
 
-   ```
-   [MOCK] Petición recibida:
-   { restaurantId: 1, promotionId: 1, clickedAt: '...', source: 'Ristorino' }
-   ```
-
----
-
-## 7) Troubleshooting rápido
-
-* **CORS error** → habilitar origen `http://localhost:4200`.
-* **Sin tarjetas** → revisar `GET /api/promotions`.
-* **500 en `/api/clicks`** → promotionId inválido.
-* **404 `/api/restaurants/:id`** → no existe el restaurante.
-* **Scheduler no notifica** → mock no está corriendo o puerto incorrecto.
-
----
-
-## 8) Roadmap sugerido
-
-* **UI/UX:** usar Angular Material o Tailwind para mejorar diseño.
-* **Auth (futuro):** JWT + roles (Admin/Client).
-* **Docker Compose:** para levantar Spring + Node juntos.
-* **Swagger UI:** exponer `/swagger-ui/index.html` para documentación.
-* **Datos iniciales:** agregar `schema.sql` + `data.sql` con un restaurante demo.
-
----
-
-## 9) Glosario mínimo
-
-* **Promotion:** oferta publicada por el restaurante.
-* **ClickEvent:** registro de interacción del usuario con una promoción.
-* **Scheduler:** tarea en segundo plano que notifica clics.
-* **Mock:** servicio Node que emula al restaurante.
-
----
+- **Motor de IA** (`model/ia/MotorIARestFacadeImpl`): la búsqueda en lenguaje natural (Req 10/35) y la generación de contenidos (Req 34/48) responden **501** hasta que se implemente. La URL, la clave y el modelo se configuran en `application.properties` (`ia.api.*`).
+- **Requerimientos opcionales:** modificar o cancelar reservas, pedidos, reseñas, favoritos y administración.

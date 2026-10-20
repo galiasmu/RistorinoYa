@@ -1,0 +1,1367 @@
+{
+  "info": {
+    "name": "Ristorino - Backend",
+    "description": "Pruebas del backend del portal Ristorino (puerto 8080).\n\n**Antes de empezar:** base `ristorino` creada (`final-db-creation.sql` + `procedimientos.sql`), los 4 servicios de los restaurantes levantados (8081 a 8084) y el backend corriendo.\n\n**Orden:** correr las carpetas de la 0 a la 7 (o toda la colección con *Run collection*).\n\n**Variables automáticas:** el registro genera un correo nuevo, el login guarda el token y la colección lo manda en todos los requests, `fechaReserva` es hoy + 7 días y `hoy` es la fecha actual.\n\n**Idioma:** los requests marcados `(en)` mandan `Accept-Language: en`.\n\nCada request explica en su descripción qué hace y qué respuesta esperar, y tiene un test con el código esperado. Más detalle en `GUIA.md`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const hoy = new Date();",
+          "pm.collectionVariables.set('hoy', hoy.toISOString().slice(0, 10));",
+          "const d = new Date(); d.setDate(d.getDate() + 7);",
+          "pm.collectionVariables.set('fechaReserva', d.toISOString().slice(0, 10));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Admin - sincronización con los restaurantes",
+      "item": [
+        {
+          "name": "Req 45 - Actualizar sucursales - 1. La Bella Pizza (REST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/1/actualizar-sucursales"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus sucursales (con turnos, zonas, tipos de comida, especialidades y estilos) y las guarda en el portal con `ins_upd_sucursal_restaurante`. Se puede repetir: si la sucursal ya existe, la actualiza.\n\n**Esperado:** 200 con la cantidad de sucursales guardadas. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 45 - Actualizar sucursales - 2. Perukai (SOAP)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/2/actualizar-sucursales"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus sucursales (con turnos, zonas, tipos de comida, especialidades y estilos) y las guarda en el portal con `ins_upd_sucursal_restaurante`. Se puede repetir: si la sucursal ya existe, la actualiza.\n\n**Esperado:** 200 con la cantidad de sucursales guardadas. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 45 - Actualizar sucursales - 3. La Fábrica Burger (REST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/3/actualizar-sucursales"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus sucursales (con turnos, zonas, tipos de comida, especialidades y estilos) y las guarda en el portal con `ins_upd_sucursal_restaurante`. Se puede repetir: si la sucursal ya existe, la actualiza.\n\n**Esperado:** 200 con la cantidad de sucursales guardadas. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 45 - Actualizar sucursales - 4. Sabores del Norte (SOAP)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/4/actualizar-sucursales"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus sucursales (con turnos, zonas, tipos de comida, especialidades y estilos) y las guarda en el portal con `ins_upd_sucursal_restaurante`. Se puede repetir: si la sucursal ya existe, la actualiza.\n\n**Esperado:** 200 con la cantidad de sucursales guardadas. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 46 - Actualizar contenidos - 1. La Bella Pizza (REST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/1/actualizar-contenidos"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante las promociones que todavía no entregó y las guarda en el portal con 30 días de vigencia. El restaurante entrega cada contenido **una sola vez**: si se repite, devuelve 0.\n\n**Esperado:** 200 con la cantidad de contenidos guardados."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 46 - Actualizar contenidos - 2. Perukai (SOAP)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/2/actualizar-contenidos"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante las promociones que todavía no entregó y las guarda en el portal con 30 días de vigencia. El restaurante entrega cada contenido **una sola vez**: si se repite, devuelve 0.\n\n**Esperado:** 200 con la cantidad de contenidos guardados."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 46 - Actualizar contenidos - 3. La Fábrica Burger (REST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/3/actualizar-contenidos"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante las promociones que todavía no entregó y las guarda en el portal con 30 días de vigencia. El restaurante entrega cada contenido **una sola vez**: si se repite, devuelve 0.\n\n**Esperado:** 200 con la cantidad de contenidos guardados."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 46 - Actualizar contenidos - 4. Sabores del Norte (SOAP)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/4/actualizar-contenidos"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante las promociones que todavía no entregó y las guarda en el portal con 30 días de vigencia. El restaurante entrega cada contenido **una sola vez**: si se repite, devuelve 0.\n\n**Esperado:** 200 con la cantidad de contenidos guardados."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 34/48 - Generar contenidos con IA (pendiente: 501)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/generar-contenidos"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Generaría con IA el texto promocional de los contenidos que todavía no lo tienen. Está pendiente: `MotorIARestFacadeImpl` no está implementado.\n\n**Esperado:** 501."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 o 501', () => pm.expect(pm.response.code).to.be.oneOf([200, 501]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Trae de cada restaurante sus sucursales y contenidos y los guarda en la base del portal. **Correr primero**, con los 4 servicios de los restaurantes levantados (8081 a 8084). Equivale a los procesos de `batch/`."
+    },
+    {
+      "name": "1. Autenticación",
+      "item": [
+        {
+          "name": "Req 1 - Registro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/registro"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"apellido\": \"Ferreyra\",\n  \"nombre\": \"Lucía\",\n  \"correo\": \"{{correo}}\",\n  \"clave\": \"{{clave}}\",\n  \"confirmacionClave\": \"{{clave}}\",\n  \"telefonos\": \"351-5550000\",\n  \"nroLocalidad\": 1,\n  \"preferencias\": [\n    {\n      \"codCategoria\": 1,\n      \"nroValorDominio\": 11,\n      \"observaciones\": \"Me encanta la peruana\"\n    },\n    {\n      \"codCategoria\": 2,\n      \"nroValorDominio\": 3\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Alta de un cliente con dos preferencias (cocina peruana y sin gluten). Antes de enviarse, genera un correo nuevo para poder repetir la prueba. La contraseña se guarda hasheada con BCrypt.\n\n**Esperado:** 201 con `estado: REGISTRADO` y el `nroCliente`, que se guarda en la variable `nroCliente`."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Correo distinto en cada corrida, para poder repetir el registro",
+                  "pm.collectionVariables.set('correo', 'lucia.' + Date.now() + '@mail.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.expect(pm.response.code).to.be.oneOf([201]));",
+                  "pm.collectionVariables.set('nroCliente', pm.response.json().nroCliente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 1 - Registro con claves distintas (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/registro"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"apellido\": \"Ferreyra\",\n  \"nombre\": \"Lucía\",\n  \"correo\": \"otra.{{$timestamp}}@mail.com\",\n  \"clave\": \"1234\",\n  \"confirmacionClave\": \"9999\",\n  \"telefonos\": \"351-5550000\",\n  \"nroLocalidad\": 1,\n  \"preferencias\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "La clave y su confirmación no coinciden.\n\n**Esperado:** 400 con `estado: RECHAZADO` y `motivo: CLAVES_NO_COINCIDEN`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.expect(pm.response.code).to.be.oneOf([400]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 2 - Login con clave incorrecta (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{correo}}\",\n  \"clave\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Login con el correo registrado y una clave equivocada.\n\n**Esperado:** 401 sin cuerpo."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.expect(pm.response.code).to.be.oneOf([401]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 2 - Login (guarda el token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{correo}}\",\n  \"clave\": \"{{clave}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Login con el cliente recién registrado.\n\n**Esperado:** 200 con el `token` y los datos del cliente. El token queda en la variable `token` y la colección lo manda como `Authorization: Bearer` en todos los requests."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                  "pm.collectionVariables.set('token', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Perfil del cliente logueado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clientes/me"
+            },
+            "description": "Datos del cliente dueño del token (sin la clave). Ruta protegida por `AuthInterceptor`.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Perfil sin token (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clientes/me"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "La misma ruta sin el header `Authorization`.\n\n**Esperado:** 401: `AuthInterceptor` corta el pedido antes de llegar al controller."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.expect(pm.response.code).to.be.oneOf([401]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Registra un cliente nuevo (con un correo distinto en cada corrida), prueba los errores y hace login. El login guarda el token en `{{token}}`, y desde ahí todos los requests lo mandan solos."
+    },
+    {
+      "name": "2. Catálogos",
+      "item": [
+        {
+          "name": "Preferencias (es)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalogo/preferencias"
+            },
+            "description": "Categorías (tipo de cocina, especialidades, estilo, nivel de precio) y sus valores, en español. Se usan en el registro y en los filtros de búsqueda: `codCategoria` + `nroValorDominio` identifican cada valor.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Preferencias (en)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalogo/preferencias"
+            },
+            "description": "Lo mismo que el anterior, con `Accept-Language: en`: los textos vuelven en inglés.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Localidades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalogo/localidades"
+            },
+            "description": "Localidades para el formulario de registro (`nroLocalidad`).\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estados de reservas (es)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalogo/estados-reservas"
+            },
+            "description": "Estados de reserva para filtrar \"mis reservas\" (`codEstado`).\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estados de reservas (en)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalogo/estados-reservas"
+            },
+            "description": "Lo mismo, en inglés.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Listas para llenar los formularios del frontend. Muestran cómo el header `Accept-Language` cambia el idioma de la respuesta."
+    },
+    {
+      "name": "3. Restaurantes",
+      "item": [
+        {
+          "name": "Restaurantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes"
+            },
+            "description": "Los restaurantes integrados al portal.\n\n**Esperado:** 200 con los 4 restaurantes."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Restaurante 2 (Perukai)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/2"
+            },
+            "description": "Un restaurante por número.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Restaurante inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/99"
+            },
+            "description": "Un número que no existe.\n\n**Esperado:** 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.expect(pm.response.code).to.be.oneOf([404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 11 - Sucursales de Perukai (es)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/2/sucursales"
+            },
+            "description": "Sucursales de Perukai con sus zonas, turnos y preferencias. Sale de la base del portal, así que necesita la carpeta 0. `zonas` y `preferencias` vienen como texto JSON (el frontend usa `JSON.parse`).\n\n**Esperado:** 200 con 2 sucursales."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 11 - Sucursales de Perukai (en)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/2/sucursales"
+            },
+            "description": "Lo mismo en inglés: cambian los nombres de las zonas y de las preferencias.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 14/37 - Disponibilidad Perukai (SOAP)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/2/sucursales/1/disponibilidad?fecha={{fechaReserva}}&adultos=2&menores=0"
+            },
+            "description": "Lugares libres por zona y turno en la sucursal 1 de Perukai para dentro de 7 días, para 2 adultos. **Se le pregunta a Perukai en el momento, por SOAP.**\n\n**Esperado:** 200 con una fila por zona y turno (`lugaresLibres`, `disponible`)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 14/37 - Disponibilidad Perukai, solo Salón (SOAP)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/2/sucursales/1/disponibilidad?fecha={{fechaReserva}}&adultos=2&menores=1&codZona=1"
+            },
+            "description": "Lo mismo, pero solo la zona 1 (Salón) y con un menor: los turnos que no aceptan menores vuelven con `disponible: false`.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 14/37 - Disponibilidad La Bella Pizza (REST)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurantes/1/sucursales/1/disponibilidad?fecha={{fechaReserva}}&adultos=4&menores=2"
+            },
+            "description": "Disponibilidad en La Bella Pizza para 4 adultos y 2 menores. **Se le pregunta al restaurante en el momento, por REST.** Comparalo con el de Perukai: el portal responde igual sin importar el protocolo.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Datos de los restaurantes y sus sucursales (salen de la base del portal) y disponibilidad (se le pregunta al restaurante en el momento, por REST o por SOAP)."
+    },
+    {
+      "name": "4. Búsqueda",
+      "item": [
+        {
+          "name": "Req 9 - Búsqueda por filtros (cocina peruana en Nueva Córdoba)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/busqueda/filtros"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valoresDominio\": [\n    {\n      \"codCategoria\": 1,\n      \"nroValorDominio\": 11\n    }\n  ],\n  \"barrio\": \"Nueva Córdoba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Sucursales con cocina peruana (`codCategoria` 1, `nroValorDominio` 11) en el barrio Nueva Córdoba.\n\n**Esperado:** 200, con las sucursales ordenadas por `coincidencias`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 9 - Búsqueda por filtros (sin gluten, cualquier barrio)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/busqueda/filtros"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valoresDominio\": [\n    {\n      \"codCategoria\": 2,\n      \"nroValorDominio\": 3\n    }\n  ],\n  \"barrio\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Sucursales con opción sin gluten (`codCategoria` 2, `nroValorDominio` 3), sin filtrar por barrio.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 10 - Búsqueda en lenguaje natural (pendiente: 501)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/busqueda/lenguaje-natural"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"quiero sushi para dos en Nueva Córdoba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Búsqueda escrita libremente. La IA traduciría el texto a los filtros de la búsqueda anterior. Está pendiente.\n\n**Esperado:** 501."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 o 501', () => pm.expect(pm.response.code).to.be.oneOf([200, 501]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Búsqueda de sucursales por preferencias y barrio. La de lenguaje natural responde 501 hasta que se implemente la IA."
+    },
+    {
+      "name": "5. Contenidos y clics",
+      "item": [
+        {
+          "name": "Req 12 - Contenidos vigentes (guarda el primero)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/contenidos"
+            },
+            "description": "Promociones vigentes de todos los restaurantes, para la portada. Guarda el restaurante, idioma y número del primer contenido en las variables `click*`, que usan los requests de clics.\n\n**Esperado:** 200. Si viene vacío, falta correr la carpeta 0."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                  "const lista = pm.response.json();",
+                  "if (lista.length > 0) {",
+                  "  pm.collectionVariables.set('clickRestaurante', lista[0].nroRestaurante);",
+                  "  pm.collectionVariables.set('clickIdioma', lista[0].nroIdioma);",
+                  "  pm.collectionVariables.set('clickContenido', lista[0].nroContenido);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 12 - Contenidos vigentes de Perukai (en)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/contenidos?nroRestaurante=2"
+            },
+            "description": "Promociones de un solo restaurante, en inglés. Si no hay versión en inglés, se muestran en español.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 50 - Clic de un cliente logueado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/contenidos/clicks"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nroRestaurante\": {{clickRestaurante}},\n  \"nroIdioma\": {{clickIdioma}},\n  \"nroContenido\": {{clickContenido}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Registra un clic en el contenido guardado antes. Como viaja el token, el clic queda asociado al cliente. Se guarda con el costo del contenido y queda pendiente de avisar al restaurante.\n\n**Esperado:** 201 con el `nroClick`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.expect(pm.response.code).to.be.oneOf([201]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 50 - Clic anónimo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/contenidos/clicks"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nroRestaurante\": {{clickRestaurante}},\n  \"nroIdioma\": {{clickIdioma}},\n  \"nroContenido\": {{clickContenido}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "El mismo clic sin sesión: también se registra, sin cliente.\n\n**Esperado:** 201."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.expect(pm.response.code).to.be.oneOf([201]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 50 - Notificar clics al restaurante",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/{{clickRestaurante}}/notificar-clicks"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le informa al restaurante los clics pendientes (los dos anteriores) y los marca como notificados. Si se repite enseguida, devuelve 0.\n\n**Esperado:** 200 con la cantidad de clics notificados."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Promociones vigentes y registro de clics. Los clics se guardan en el portal y se le informan al restaurante después, con \"Notificar clics\". Necesita la carpeta 0."
+    },
+    {
+      "name": "6. Reservas",
+      "item": [
+        {
+          "name": "Req 15/38 - Reservar en Perukai (SOAP) - CONFIRMADA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservas"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nroRestaurante\": 2,\n  \"nroSucursal\": 1,\n  \"codZona\": 1,\n  \"fecha\": \"{{fechaReserva}}\",\n  \"hora\": \"20:30\",\n  \"cantAdultos\": 2,\n  \"cantMenores\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Reserva para 2 adultos en el Salón de Perukai, turno 20:30, dentro de 7 días. El portal calcula el costo, la registra en Perukai **por SOAP** y, si la confirma, la guarda con el código que generó el restaurante.\n\n**Esperado:** 201 con `estado: CONFIRMADA`, `nroReserva`, `codReservaSucursal` y `costoReserva`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.expect(pm.response.code).to.be.oneOf([201]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 15/38 - Reservar en La Bella Pizza (REST) - CONFIRMADA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservas"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nroRestaurante\": 1,\n  \"nroSucursal\": 1,\n  \"codZona\": 1,\n  \"fecha\": \"{{fechaReserva}}\",\n  \"hora\": \"20:00\",\n  \"cantAdultos\": 2,\n  \"cantMenores\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Lo mismo en La Bella Pizza **por REST**, con un menor (el Salón y el turno de las 20:00 los aceptan).\n\n**Esperado:** 201 con `estado: CONFIRMADA`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.expect(pm.response.code).to.be.oneOf([201]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 15/38 - Reserva sin lugar - RECHAZADA (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservas"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nroRestaurante\": 2,\n  \"nroSucursal\": 1,\n  \"codZona\": 4,\n  \"fecha\": \"{{fechaReserva}}\",\n  \"hora\": \"20:30\",\n  \"cantAdultos\": 50,\n  \"cantMenores\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Pide 50 lugares en la barra de sushi de Perukai, que tiene 8. El restaurante la rechaza y el portal no guarda nada.\n\n**Esperado:** 409 con `estado: RECHAZADA` y `motivo: SIN_DISPONIBILIDAD`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.expect(pm.response.code).to.be.oneOf([409]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 15/38 - Reserva sin token (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservas"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nroRestaurante\": 2,\n  \"nroSucursal\": 1,\n  \"codZona\": 1,\n  \"fecha\": \"{{fechaReserva}}\",\n  \"hora\": \"20:30\",\n  \"cantAdultos\": 2,\n  \"cantMenores\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Intento de reservar sin sesión.\n\n**Esperado:** 401."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.expect(pm.response.code).to.be.oneOf([401]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 16 - Mis reservas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservas"
+            },
+            "description": "Reservas del cliente logueado (las dos confirmadas antes).\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 16 - Mis reservas pendientes, desde hoy (en)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservas?codEstado=1&fechaDesde={{hoy}}"
+            },
+            "description": "Las mismas, filtradas por estado 1 (Pendiente) y desde hoy, con los textos en inglés.\n\n**Esperado:** 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Confirmación de reservas en tiempo real con el restaurante y consulta de las reservas del cliente. Necesita el token de la carpeta 1."
+    },
+    {
+      "name": "7. Cierre de sesión",
+      "item": [
+        {
+          "name": "Req 5 - Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout"
+            },
+            "description": "Cierra la sesión: el token queda revocado.\n\n**Esperado:** 204 sin cuerpo."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204', () => pm.expect(pm.response.code).to.be.oneOf([204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Perfil con el token revocado (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clientes/me"
+            },
+            "description": "Usa el mismo token después del logout.\n\n**Esperado:** 401."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.expect(pm.response.code).to.be.oneOf([401]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Cierra la sesión y comprueba que el token ya no sirve."
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "correo",
+      "value": "lucia.ferreyra@mail.com"
+    },
+    {
+      "key": "clave",
+      "value": "1234"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "nroCliente",
+      "value": ""
+    },
+    {
+      "key": "fechaReserva",
+      "value": ""
+    },
+    {
+      "key": "hoy",
+      "value": ""
+    },
+    {
+      "key": "clickRestaurante",
+      "value": "1"
+    },
+    {
+      "key": "clickIdioma",
+      "value": "1"
+    },
+    {
+      "key": "clickContenido",
+      "value": "1"
+    }
+  ]
+}
