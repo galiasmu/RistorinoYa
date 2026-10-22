@@ -22,4 +22,7 @@ public interface RestauranteService {
 
     // Crea la facade (REST o SOAP) del restaurante a partir de su configuración en la BD
     RestauranteFacade obtenerFacade(int nroRestaurante);
+
+    // Req 11: trae la descripción del restaurante y la guarda en el portal
+    void actualizarRestaurante(int nroRestaurante);
 }

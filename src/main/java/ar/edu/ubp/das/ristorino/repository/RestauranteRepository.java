@@ -131,4 +131,15 @@ public class RestauranteRepository {
 
         simpleJdbcCallFactory.execute(procedureName, schemaName, params);
     }
-}
+
+    public void updDescripcion(int nroRestaurante, String descripcion) {
+        String procedureName = "upd_descripcion_restaurante"; //llama directamente por nombre de procedure
+        String schemaName = "dbo";
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("nro_restaurante", nroRestaurante)
+                .addValue("descripcion", descripcion);
+        simpleJdbcCallFactory.execute(procedureName, schemaName, params);
+
+    }
+ }

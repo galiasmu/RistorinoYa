@@ -30,6 +30,17 @@ public class AdminTaskController {
         }
     }
 
+    // Req 11: trae la descripción del restaurante (REST o SOAP) y la guarda en el portal
+    @PostMapping("/{nroRestaurante}/actualizar-restaurante")
+    public ResponseEntity<String> actualizarRestaurante(@PathVariable int nroRestaurante) {
+        try {
+            restauranteService.actualizarRestaurante(nroRestaurante);
+            return ResponseEntity.ok("Restaurante actualizado: " + nroRestaurante);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
     // Req 46
     @PostMapping("/{nroRestaurante}/actualizar-contenidos")
     public ResponseEntity<String> actualizarContenidos(@PathVariable int nroRestaurante) {

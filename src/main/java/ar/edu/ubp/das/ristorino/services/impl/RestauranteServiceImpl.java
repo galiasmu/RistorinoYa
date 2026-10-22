@@ -3,6 +3,7 @@ package ar.edu.ubp.das.ristorino.services.impl;
 import ar.edu.ubp.das.ristorino.beans.Restaurante;
 import ar.edu.ubp.das.ristorino.beans.Sucursal;
 import ar.edu.ubp.das.ristorino.beans.restaurante.DisponibilidadExterna;
+import ar.edu.ubp.das.ristorino.beans.restaurante.RestauranteExterno;
 import ar.edu.ubp.das.ristorino.beans.restaurante.SucursalExterna;
 import ar.edu.ubp.das.ristorino.components.RestauranteFacadeFactory;
 import ar.edu.ubp.das.ristorino.model.RestauranteConfig;
@@ -10,7 +11,6 @@ import ar.edu.ubp.das.ristorino.model.RestauranteFacade;
 import ar.edu.ubp.das.ristorino.repository.RestauranteRepository;
 import ar.edu.ubp.das.ristorino.services.RestauranteService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -58,6 +58,13 @@ public class RestauranteServiceImpl implements RestauranteService {
             }
         }
         return guardadas;
+    }
+
+    @Override
+    public void actualizarRestaurante(int nroRestaurante) {
+        RestauranteExterno restaurante =
+                obtenerFacade(nroRestaurante).obtenerRestaurante();
+        restauranteRepository.updDescripcion(nroRestaurante, restaurante.getDescripcion());
     }
 
     @Override

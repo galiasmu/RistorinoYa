@@ -83,6 +83,7 @@ CREATE TABLE dbo.restaurantes (
     nro_restaurante  INT          NOT NULL PRIMARY KEY,
     razon_social     VARCHAR(100) NOT NULL,
     cuit             VARCHAR(13)  NOT NULL,
+    descripcion      VARCHAR(1000) NULL,
     CONSTRAINT AK_restaurantes_cuit UNIQUE (cuit)
 );
 

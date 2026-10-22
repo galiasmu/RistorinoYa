@@ -31,7 +31,7 @@ CREATE OR ALTER PROCEDURE dbo.get_restaurante
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT r.nro_restaurante, r.razon_social, r.cuit
+    SELECT r.nro_restaurante, r.razon_social, r.cuit, r.descripcion
     FROM dbo.restaurantes r
     WHERE r.nro_restaurante = @nro_restaurante;
 END;
@@ -452,6 +452,18 @@ BEGIN
     SET notificado = 1
     WHERE nro_restaurante = @nro_restaurante AND nro_idioma = @nro_idioma
       AND nro_contenido = @nro_contenido AND nro_click = @nro_click;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.upd_descripcion_restaurante
+    @nro_restaurante  INT,
+    @descripcion      VARCHAR(1000)
+AS
+BEGIN
+    SET NOCOUNT ON;                              -- no devuelve el "1 row affected"
+    UPDATE dbo.restaurantes                      -- la TABLA que se modifica
+    SET descripcion = @descripcion               -- la COLUMNA = el VALOR que llega por parámetro
+    WHERE nro_restaurante = @nro_restaurante;    -- solo la fila de ESE restaurante
 END;
 GO
 
