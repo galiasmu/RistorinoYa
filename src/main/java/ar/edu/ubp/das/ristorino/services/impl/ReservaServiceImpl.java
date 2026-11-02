@@ -11,6 +11,7 @@ import ar.edu.ubp.das.ristorino.repository.ClienteRepository;
 import ar.edu.ubp.das.ristorino.repository.ReservaRepository;
 import ar.edu.ubp.das.ristorino.services.ReservaService;
 import ar.edu.ubp.das.ristorino.services.RestauranteService;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -57,7 +58,13 @@ public class ReservaServiceImpl implements ReservaService {
         resultado.setCostoReserva(costoReserva);
 
         if (CONFIRMADA.equals(respuesta.getEstado())) {
-            resultado.setNroReserva(reservaRepository.insReserva(nroCliente, reserva, costoReserva, respuesta.getCodReserva()));
+            try {
+                resultado.setNroReserva(reservaRepository.insReserva(nroCliente, reserva, costoReserva, respuesta.getCodReserva()));
+            } catch (DataAccessException e) {
+                // El restaurante ya la confirmó, pero el portal todavía no tiene esa zona o turno: se sincroniza y se guarda
+                restauranteService.actualizarSucursales(reserva.getNroRestaurante());
+                resultado.setNroReserva(reservaRepository.insReserva(nroCliente, reserva, costoReserva, respuesta.getCodReserva()));
+            }
         }
         return resultado;
     }

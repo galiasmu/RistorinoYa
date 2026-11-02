@@ -44,6 +44,8 @@ public class ContenidoServiceImpl implements ContenidoService {
 
     @Override
     public int actualizarContenidos(int nroRestaurante) {
+        // Primero las sucursales: el restaurante entrega cada contenido una sola vez y algunos son de una sucursal
+        restauranteService.actualizarSucursales(nroRestaurante);
         int guardados = 0;
         for (ContenidoExterno contenido : restauranteService.obtenerFacade(nroRestaurante).obtenerContenidos()) {
             try {

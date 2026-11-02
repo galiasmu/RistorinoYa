@@ -317,7 +317,9 @@ BEGIN
     BEGIN
         UPDATE dbo.contenidos_restaurantes
         SET nro_sucursal = @nro_sucursal, contenido_a_publicar = @contenido_a_publicar,
-            imagen_promocional = @imagen_a_publicar, costo_click = @costo_click
+            imagen_promocional = @imagen_a_publicar, costo_click = @costo_click,
+            fecha_ini_vigencia = CAST(GETDATE() AS DATE),
+            fecha_fin_vigencia = DATEADD(DAY, @dias_vigencia, CAST(GETDATE() AS DATE))
         WHERE nro_restaurante = @nro_restaurante AND nro_idioma = 1
           AND cod_contenido_restaurante = @cod_contenido_restaurante;
         RETURN;

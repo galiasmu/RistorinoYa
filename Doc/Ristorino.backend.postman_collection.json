@@ -233,6 +233,106 @@
           ]
         },
         {
+          "name": "Req 11 - Actualizar restaurante - 1. La Bella Pizza (REST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/1/actualizar-restaurante"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus datos (`obtenerRestaurante`) y guarda la descripción en el portal con `upd_descripcion_restaurante`. Se puede repetir.\n\n**Esperado:** 200 `Restaurante actualizado: 1`. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 11 - Actualizar restaurante - 2. Perukai (SOAP)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/2/actualizar-restaurante"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus datos (`obtenerRestaurante`) y guarda la descripción en el portal con `upd_descripcion_restaurante`. Se puede repetir.\n\n**Esperado:** 200 `Restaurante actualizado: 2`. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 11 - Actualizar restaurante - 3. La Fábrica Burger (REST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/3/actualizar-restaurante"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus datos (`obtenerRestaurante`) y guarda la descripción en el portal con `upd_descripcion_restaurante`. Se puede repetir.\n\n**Esperado:** 200 `Restaurante actualizado: 3`. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Req 11 - Actualizar restaurante - 4. Sabores del Norte (SOAP)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/restaurantes/4/actualizar-restaurante"
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Le pide al restaurante sus datos (`obtenerRestaurante`) y guarda la descripción en el portal con `upd_descripcion_restaurante`. Se puede repetir.\n\n**Esperado:** 200 `Restaurante actualizado: 4`. Un 500 suele indicar que el servicio del restaurante no está levantado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Req 34/48 - Generar contenidos con IA (pendiente: 501)",
           "request": {
             "method": "POST",
