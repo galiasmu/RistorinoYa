@@ -1420,6 +1420,51 @@
         }
       ],
       "description": "Cierra la sesión y comprueba que el token ya no sirve."
+    },
+    {
+      "name": "8. Liquidación",
+      "item": [
+        {
+          "name": "RNF - Liquidación mensual de fees",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/liquidaciones"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anio\": 2026,\n  \"mes\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Suma, por restaurante, los fees de las reservas (sin las canceladas) y de los clics del mes pedido, con el SP `get_liquidacion_mensual`.\n\n**Esperado:** 200 con una fila por restaurante (los 4, aunque no tengan movimiento) y su `totalLiquidar`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.expect(pm.response.code).to.be.oneOf([200]));",
+                  "pm.test('Los 4 restaurantes', () => pm.expect(pm.response.json().length).to.eql(4));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [

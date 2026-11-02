@@ -673,3 +673,37 @@ BEGIN
     ORDER BY rr.fecha_reserva DESC, rr.hora_reserva DESC;
 END;
 GO
+
+-- COnformar liquidacion mensual
+
+CREATE OR ALTER PROCEDURE dbo.get_liquidacion_mensual
+    @anio INT,
+    @mes  INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT r.nro_restaurante,
+           r.razon_social,
+           COALESCE(res.cant, 0)  AS cant_reservas,
+           COALESCE(res.total, 0) AS total_reservas,
+           COALESCE(clk.cant, 0)  AS cant_clicks,
+           COALESCE(clk.total, 0) AS total_clicks,
+           COALESCE(res.total, 0) + COALESCE(clk.total, 0) AS total_liquidar
+    FROM dbo.restaurantes r
+             LEFT JOIN (SELECT nro_restaurante, COUNT(*) AS cant, SUM(costo_reserva) AS total
+                        FROM dbo.reservas_restaurantes
+                        WHERE cod_estado <> 2
+                          AND YEAR(fecha_hora_registro) = @anio
+                          AND MONTH(fecha_hora_registro) = @mes
+                        GROUP BY nro_restaurante) res ON res.nro_restaurante = r.nro_restaurante
+             LEFT JOIN (SELECT nro_restaurante, COUNT(*) AS cant, SUM(costo_click) AS total
+                        FROM dbo.clicks_contenidos_restaurantes
+                        WHERE YEAR(fecha_hora_registro) = @anio
+                          AND MONTH(fecha_hora_registro) = @mes
+                        GROUP BY nro_restaurante) clk ON clk.nro_restaurante = r.nro_restaurante
+    ORDER BY r.nro_restaurante;
+END;
+GO
+
+
