@@ -284,8 +284,7 @@ BEGIN
     FROM dbo.sucursales_restaurantes s
     JOIN dbo.restaurantes r ON r.nro_restaurante = s.nro_restaurante
     JOIN dbo.localidades  l ON l.nro_localidad   = s.nro_localidad
-    WHERE (@barrio IS NULL OR s.barrio = @barrio)
-      AND (NOT EXISTS (SELECT 1 FROM @filtros)
+    WHERE (@barrio IS NULL OR s.barrio = @barrio COLLATE Modern_Spanish_CI_AI)      AND (NOT EXISTS (SELECT 1 FROM @filtros)
            OR EXISTS (SELECT 1 FROM dbo.preferencias_restaurantes p
                       JOIN @filtros f ON f.cod_categoria = p.cod_categoria AND f.nro_valor_dominio = p.nro_valor_dominio
                       WHERE p.nro_restaurante = s.nro_restaurante AND p.nro_sucursal = s.nro_sucursal))

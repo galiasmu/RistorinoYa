@@ -2,7 +2,9 @@ package ar.edu.ubp.das.ristorino.services.impl;
 
 import ar.edu.ubp.das.ristorino.beans.FiltrosBusqueda;
 import ar.edu.ubp.das.ristorino.beans.ResultadoBusqueda;
+import ar.edu.ubp.das.ristorino.beans.ValorPreferencia;
 import ar.edu.ubp.das.ristorino.model.ia.MotorIAFacade;
+import ar.edu.ubp.das.ristorino.repository.CatalogoRepository;
 import ar.edu.ubp.das.ristorino.repository.RestauranteRepository;
 import ar.edu.ubp.das.ristorino.services.BusquedaService;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,12 @@ import java.util.List;
 public class BusquedaServiceImpl implements BusquedaService {
 
     private final RestauranteRepository restauranteRepository;
+    private final CatalogoRepository catalogoRepository;
     private final MotorIAFacade motorIAFacade;
 
-    public BusquedaServiceImpl(RestauranteRepository restauranteRepository, MotorIAFacade motorIAFacade) {
+    public BusquedaServiceImpl(RestauranteRepository restauranteRepository, CatalogoRepository catalogoRepository, MotorIAFacade motorIAFacade) {
         this.restauranteRepository = restauranteRepository;
+        this.catalogoRepository = catalogoRepository;
         this.motorIAFacade = motorIAFacade;
     }
 
@@ -27,8 +31,8 @@ public class BusquedaServiceImpl implements BusquedaService {
 
     @Override
     public List<ResultadoBusqueda> buscarLenguajeNatural(String texto, String codIdioma) {
-        // La IA interpreta el texto y devuelve los mismos filtros que usa la búsqueda estructurada
-        FiltrosBusqueda filtros = motorIAFacade.interpretarBusqueda(texto, codIdioma);
+        List<ValorPreferencia> preferencias = catalogoRepository.getPreferencias(codIdioma);
+        FiltrosBusqueda filtros = motorIAFacade.interpretarBusqueda(texto, preferencias);
         return restauranteRepository.buscarRestaurantes(filtros);
     }
 }

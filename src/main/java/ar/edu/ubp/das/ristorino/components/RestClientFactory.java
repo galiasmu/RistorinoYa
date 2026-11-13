@@ -10,4 +10,7 @@ public class RestClientFactory {
     public Httpful createRestClient(String baseUrl, String token) {
         return new Httpful(baseUrl).bearer(token);
     }
+    public Httpful createRestClient(String baseUrl) {
+        return new Httpful(baseUrl);
+    }
 }
