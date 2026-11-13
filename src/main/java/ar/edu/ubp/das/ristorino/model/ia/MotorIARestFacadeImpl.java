@@ -36,20 +36,26 @@ public class MotorIARestFacadeImpl implements MotorIAFacade {
 
     @Override
     public FiltrosBusqueda interpretarBusqueda(String texto, List<ValorPreferencia> preferencias) {
-        String catalogo = preferencias.stream().map(p -> "{\"codCategoria\": " + p.getCodCategoria() + ", \"nroValorDominio\": " + p.getNroValorDominio() + "} = " + p.getCategoria() + ": " + p.getValorDominio()).collect(Collectors.joining("\n"));        String prompt = """
-            Eres un asistente de un portal de restaurantes de Córdoba. Convierte el pedido del usuario en filtros de búsqueda.
-            1. Usa solo valores de este catálogo. Cada línea tiene el objeto a copiar en "valoresDominio" y lo que significa:
-            %s
-            2. Si el usuario nombra un barrio, ponlo en "barrio"; si no, deja null.
-            3. Devuelve exclusivamente este JSON, sin texto adicional:
-            {"valoresDominio": [{"codCategoria": {número}, "nroValorDominio": {número}}], "barrio": {barrio o null}}
-            """.formatted(catalogo);
+        String catalogo = preferencias.stream().map(p -> "{\"codCategoria\": " + p.getCodCategoria() + ", \"nroValorDominio\": " + p.getNroValorDominio() + "} = " + p.getCategoria() + ": " + p.getValorDominio()).collect(Collectors.joining("\n"));
+        String prompt = """
+        Eres un asistente de un portal de restaurantes de Córdoba. Convierte el pedido del usuario en filtros de búsqueda.
+        1. Usa solo valores de este catálogo. Cada línea tiene el objeto a copiar en "valoresDominio" y lo que significa:
+        %s
+        2. Agrega un valor solo si el usuario lo pide o sale directo de una comida (pizza o pastas = Italiana, sushi = Japonesa, hamburguesas = Americana). No inventes: si ningún valor corresponde, deja "valoresDominio" vacío.
+        3. Si el usuario nombra un barrio, ponlo en "barrio"; si no, deja null.
+        4. Devuelve exclusivamente este JSON, sin texto adicional:
+        {"valoresDominio": [{"codCategoria": {número}, "nroValorDominio": {número}}], "barrio": {barrio o null}}
+        Ejemplos:
+        "pastas en General Paz" -> {"valoresDominio": [{"codCategoria": 1, "nroValorDominio": 1}], "barrio": "General Paz"}
+        "algo rico en Güemes" -> {"valoresDominio": [], "barrio": "Güemes"}
+        """.formatted(catalogo);
 
         Map<String, Object> pedido = Map.of(
                 "model", modelo,
                 "stream", false,
                 "format", "json",
                 "keep_alive", "30m",
+                "options", Map.of("temperature", 0),
                 "messages", List.of(
                         Map.of("role", "system", "content", prompt),
                         Map.of("role", "user", "content", texto)));
