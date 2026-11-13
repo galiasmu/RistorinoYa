@@ -33,6 +33,12 @@ public class BusquedaServiceImpl implements BusquedaService {
     public List<ResultadoBusqueda> buscarLenguajeNatural(String texto, String codIdioma) {
         List<ValorPreferencia> preferencias = catalogoRepository.getPreferencias(codIdioma);
         FiltrosBusqueda filtros = motorIAFacade.interpretarBusqueda(texto, preferencias);
+
+        // Si la IA no encontró comida ni barrio, el pedido no tiene que ver con restaurantes
+        if ((filtros.getValoresDominio() == null || filtros.getValoresDominio().isEmpty())
+                && (filtros.getBarrio() == null || filtros.getBarrio().isBlank())) {
+            return List.of();
+        }
         return restauranteRepository.buscarRestaurantes(filtros);
     }
 }

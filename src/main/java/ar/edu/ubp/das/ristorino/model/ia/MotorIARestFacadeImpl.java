@@ -41,7 +41,7 @@ public class MotorIARestFacadeImpl implements MotorIAFacade {
         Eres un asistente de un portal de restaurantes de Córdoba. Convierte el pedido del usuario en filtros de búsqueda.
         1. Usa solo valores de este catálogo. Cada línea tiene el objeto a copiar en "valoresDominio" y lo que significa:
         %s
-        2. Agrega un valor solo si el usuario lo pide o sale directo de una comida (pizza o pastas = Italiana, sushi = Japonesa, hamburguesas = Americana). No inventes: si ningún valor corresponde, deja "valoresDominio" vacío.
+        2. Agrega un valor solo si el usuario lo pide o sale directo de una comida (pizza o pastas = Italiana, sushi = Japonesa, hamburguesas = Americana). No inventes: si ningún valor corresponde, deja "valoresDominio" vacío (tambien si el pedido no es sobre comida).
         3. Si el usuario nombra un barrio, ponlo en "barrio"; si no, deja null.
         4. Devuelve exclusivamente este JSON, sin texto adicional:
         {"valoresDominio": [{"codCategoria": {número}, "nroValorDominio": {número}}], "barrio": {barrio o null}}
